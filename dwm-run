@@ -14,6 +14,18 @@ test -f "$usermodmap"    && xmodmap     "$usermodmap"
 
 # start some nice programs
 eval $(ssh-agent)
+eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+export SSH_AUTH_SOCK
+export GPG_AGENT_INFO
+export GNOME_KEYRING_CONTROL
+export GNOME_KEYRING_PID
+
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+# fcitx -r
+
+export TERMINAL=xfce4-terminal
 
 test $(which xsetroot)  && xsetroot -solid midnightblue &
 test $(which gpg-agent) && eval $(gpg-agent --daemon)
@@ -29,23 +41,4 @@ xinitcfg="$HOME/.config/xinit"
 test -f "$xinitcfg/u/$(uname)"       && . "$xinitcfg/u/$(uname)"
 test -f "$xinitcfg/host/$(hostname)" && . "$xinitcfg/host/$(hostname)"
 
-/usr/local/bin/dwm 2>>.dwm_log &
-
-# exit X when dwmstatus (or failsafe xterm) is killed
-if [ $(which slstatus) ]; then
-    slstatus
-elif [ $(which dwmstatus) ]; then
-    dwmstatus
-elif [ $(which st) ]; then
-    st
-elif [ $(which urxvt) ]; then
-    urxvt
-elif [ $(which uxterm) ]; then
-    uxterm -ls -T Failsafe -geometry 80x24-0-0
-elif [ $(which rxvt) ]; then
-    rxvt
-elif [ $(which xterm) ]; then
-    xterm -ls -T Failsafe -geometry 80x24-0-0
-elif [ $(which gnome-terminal) ]; then
-    gnome-terminal
-fi
+/usr/local/bin/dwm 2> .dwm_log
